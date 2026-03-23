@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wingbound – Soar Beyond Limits</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sky: #0a0e2e;
+      --electric: #00f0ff;
+      --flame: #ff5e00;
+      --gold: #ffd700;
+      --violet: #7b2fff;
+      --pink: #ff2d78;
+      --white: #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--sky);
+      color: var(--white);
+      font-family: 'Nunito', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── ANIMATED STAR BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.8) 0%, transparent 100%),
+        radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 55% 15%, rgba(255,255,255,0.9) 0%, transparent 100%),
+        radial-gradient(1px 1px at 75% 45%, rgba(255,255,255,0.7) 0%, transparent 100%),
+        radial-gradient(2px 2px at 90% 80%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 20% 85%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 65% 70%, rgba(255,255,255,0.8) 0%, transparent 100%),
+        radial-gradient(1px 1px at 45% 40%, rgba(255,255,255,0.5) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+      animation: twinkle 4s infinite alternate;
+    }
+    @keyframes twinkle {
+      0% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 48px;
+      background: rgba(10, 14, 46, 0.7);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+    }
+    .nav-logo {
+      font-family: 'Bangers', cursive;
+      font-size: 2rem;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, var(--electric), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--electric); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    /* Glowing orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      animation: drift 8s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 500px; height: 500px; background: var(--violet); top: -100px; left: -150px; }
+    .orb-2 { width: 400px; height: 400px; background: var(--flame); bottom: -100px; right: -100px; animation-delay: -3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--pink); top: 40%; left: 50%; transform: translateX(-50%); animation-delay: -5s; }
+    @keyframes drift {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(30px, -30px) scale(1.1); }
+    }
+
+    /* Flying wing SVG */
+    .hero-wing {
+      font-size: 120px;
+      line-height: 1;
+      margin-bottom: 16px;
+      animation: wingFlap 2s ease-in-out infinite;
+      filter: drop-shadow(0 0 30px var(--electric));
+    }
+    @keyframes wingFlap {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-18px) rotate(3deg); }
+    }
+
+    .hero-eyebrow {
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--electric);
+      margin-bottom: 16px;
+    }
+
+    .hero-title {
+      font-family: 'Bangers', cursive;
+      font-size: clamp(5rem, 14vw, 11rem);
+      line-height: 0.9;
+      letter-spacing: 6px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--flame) 40%, var(--pink) 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: none;
+      margin-bottom: 24px;
+      animation: titlePop 0.8s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes titlePop {
+      from { opacity: 0; transform: scale(0.7); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .hero-sub {
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+      max-width: 560px;
+      line-height: 1.55;
+      margin-bottom: 48px;
+      animation: fadeUp 0.9s 0.3s both;
+    }
+
+    .cta-group {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.9s 0.5s both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 36px;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: none;
+    }
+    .btn:hover { transform: translateY(-3px) scale(1.04); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--flame), var(--pink));
+      color: white;
+      box-shadow: 0 8px 32px rgba(255, 94, 0, 0.5);
+    }
+    .btn-primary:hover { box-shadow: 0 12px 40px rgba(255, 94, 0, 0.7); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--electric);
+      border: 2px solid var(--electric);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+    }
+    .btn-secondary:hover { background: rgba(0,240,255,0.1); box-shadow: 0 0 30px rgba(0,240,255,0.4); }
+
+    /* ── FEATURES ── */
+    .section {
+      position: relative;
+      z-index: 1;
+      padding: 100px 24px;
+    }
+
+    .section-title {
+      font-family: 'Bangers', cursive;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      letter-spacing: 4px;
+      text-align: center;
+      margin-bottom: 12px;
+      background: linear-gradient(90deg, var(--electric), var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .section-sub {
+      text-align: center;
+      color: rgba(255,255,255,0.6);
+      font-size: 1.05rem;
+      margin-bottom: 64px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 28px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: linear-gradient(135deg, rgba(123,47,255,0.15), rgba(0,240,255,0.05));
+      border: 1px solid rgba(0,240,255,0.2);
+      border-radius: 20px;
+      padding: 36px 28px;
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+      cursor: default;
+    }
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(123,47,255,0.25);
+      border-color: rgba(0,240,255,0.5);
+    }
+
+    .feature-icon { font-size: 2.8rem; margin-bottom: 16px; }
+    .feature-title {
+      font-family: 'Bangers', cursive;
+      font-size: 1.6rem;
+      letter-spacing: 2px;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .feature-desc {
+      color: rgba(255,255,255,0.7);
+      line-height: 1.65;
+      font-size: 0.95rem;
+    }
+
+    /* ── SCREENSHOTS MARQUEE ── */
+    .marquee-section {
+      position: relative;
+      z-index: 1;
+      padding: 60px 0;
+      overflow: hidden;
+      background: linear-gradient(90deg, rgba(123,47,255,0.15) 0%, transparent 50%, rgba(255,94,0,0.15) 100%);
+    }
+    .marquee-track {
+      display: flex;
+      gap: 24px;
+      width: max-content;
+      animation: marquee 20s linear infinite;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .marquee-card {
+      width: 180px;
+      height: 320px;
+      border-radius: 20px;
+      background: linear-gradient(160deg, var(--violet), var(--electric));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .marquee-card:nth-child(2n) { background: linear-gradient(160deg, var(--flame), var(--pink)); }
+    .marquee-card:nth-child(3n) { background: linear-gradient(160deg, #1a1a6e, var(--violet)); }
+    .marquee-label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-top: 12px;
+    }
+
+    /* ── STATS ── */
+    .stats-section {
+      position: relative;
+      z-index: 1;
+      padding: 80px 24px;
+      text-align: center;
+    }
+    .stats-grid {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      flex-wrap: wrap;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .stat-item {}
+    .stat-number {
+      font-family: 'Bangers', cursive;
+      font-size: clamp(3rem, 7vw, 5rem);
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, var(--gold), var(--flame));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+    }
+    .stat-label {
+      color: rgba(255,255,255,0.55);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* ── CTA BANNER ── */
+    .cta-banner {
+      position: relative;
+      z-index: 1;
+      margin: 40px 24px 80px;
+      padding: 72px 48px;
+      border-radius: 28px;
+      text-align: center;
+      background: linear-gradient(135deg, var(--violet) 0%, var(--flame) 60%, var(--pink) 100%);
+      box-shadow: 0 20px 80px rgba(123,47,255,0.4);
+      overflow: hidden;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 40%, rgba(255,255,255,0.1), transparent 70%);
+    }
+    .cta-banner h2 {
+      font-family: 'Bangers', cursive;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      letter-spacing: 4px;
+      margin-bottom: 16px;
+    }
+    .cta-banner p {
+      font-size: 1.15rem;
+      margin-bottom: 36px;
+      opacity: 0.9;
+    }
+    .btn-white {
+      background: white;
+      color: var(--flame);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .btn-white:hover { box-shadow: 0 12px 48px rgba(0,0,0,0.4); }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.35);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--electric); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── PRIVACY PAGE ── */
+    #privacy {
+      display: none;
+      max-width: 800px;
+      margin: 120px auto 80px;
+      padding: 48px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(0,240,255,0.15);
+      border-radius: 20px;
+    }
+    #privacy.active { display: block; }
+    #privacy h1 {
+      font-family: 'Bangers', cursive;
+      font-size: 3rem;
+      letter-spacing: 3px;
+      color: var(--electric);
+      margin-bottom: 24px;
+    }
+    #privacy h2 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--gold);
+      margin: 28px 0 8px;
+    }
+    #privacy p, #privacy li {
+      color: rgba(255,255,255,0.7);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+    #privacy ul { padding-left: 20px; }
+    #privacy li { margin-bottom: 6px; }
+
+    #main-content { display: block; }
+
+    @media (max-width: 640px) {
+      nav { padding: 14px 20px; }
+      .nav-links { gap: 16px; }
+      .cta-banner { padding: 48px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo">🪶 Wingbound</div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#download">Download</a>
+      <a href="#" onclick="showPrivacy(event)">Privacy</a>
+    </div>
+  </nav>
+
+  <div id="main-content">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+
+      <div class="hero-wing">🦅</div>
+      <p class="hero-eyebrow">The Mobile Game That Sets You Free</p>
+      <h1 class="hero-title">WINGBOUND</h1>
+      <p class="hero-sub">Spread your wings, conquer the skies, and soar through breathtaking worlds in the most exhilarating flight adventure on mobile.</p>
+
+      <div class="cta-group" id="download">
+        <a class="btn btn-primary" href="#">
+          ▶ Download on Google Play
+        </a>
+        <a class="btn btn-secondary" href="#features">
+          Explore Features
+        </a>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Levels</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">12</div>
+          <div class="stat-label">Unique Wings</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">∞</div>
+          <div class="stat-label">Replayability</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">Free</div>
+          <div class="stat-label">To Play</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEATURES -->
+    <section class="section" id="features">
+      <h2 class="section-title">Why Players Love It</h2>
+      <p class="section-sub">Built for speed, style, and pure sky-high thrill.</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🌪️</div>
+          <div class="feature-title">Epic Flight Physics</div>
+          <p class="feature-desc">Feel every gust of wind with ultra-responsive controls and realistic flight mechanics that make every dive and climb feel incredible.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌍</div>
+          <div class="feature-title">Stunning Worlds</div>
+          <p class="feature-desc">Fly through lush floating islands, storm-lit canyons, neon cityscapes, and ancient sky temples — each world more dazzling than the last.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏆</div>
+          <div class="feature-title">Compete Globally</div>
+          <p class="feature-desc">Race against players worldwide on live leaderboards. Prove you're the fastest, most skilled flyer in the world.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">✨</div>
+          <div class="feature-title">Unlock & Customize</div>
+          <p class="feature-desc">Collect dozens of wing skins, trail effects, and characters. Build your perfect look and fly in your own unique style.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title">Power-Ups & Combos</div>
+          <p class="feature-desc">Chain lightning dashes, boost rings, and aerial combos together for massive score multipliers and jaw-dropping moments.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <div class="feature-title">Play Anywhere</div>
+          <p class="feature-desc">Optimized for all Android devices. Smooth gameplay, offline mode, and cloud saves — your progress goes wherever you go.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARQUEE (placeholder screens) -->
+    <div class="marquee-section">
+      <div class="marquee-track">
+        <div class="marquee-card">🌄<div class="marquee-label">World 1</div></div>
+        <div class="marquee-card">⚡<div class="marquee-label">Power-Up</div></div>
+        <div class="marquee-card">🦅<div class="marquee-label">Soar</div></div>
+        <div class="marquee-card">🏆<div class="marquee-label">Leaderboard</div></div>
+        <div class="marquee-card">🌩️<div class="marquee-label">Storm Zone</div></div>
+        <div class="marquee-card">💫<div class="marquee-label">Combo!</div></div>
+        <div class="marquee-card">🗺️<div class="marquee-label">Map</div></div>
+        <div class="marquee-card">🎮<div class="marquee-label">Controls</div></div>
+        <!-- duplicate for seamless loop -->
+        <div class="marquee-card">🌄<div class="marquee-label">World 1</div></div>
+        <div class="marquee-card">⚡<div class="marquee-label">Power-Up</div></div>
+        <div class="marquee-card">🦅<div class="marquee-label">Soar</div></div>
+        <div class="marquee-card">🏆<div class="marquee-label">Leaderboard</div></div>
+        <div class="marquee-card">🌩️<div class="marquee-label">Storm Zone</div></div>
+        <div class="marquee-card">💫<div class="marquee-label">Combo!</div></div>
+        <div class="marquee-card">🗺️<div class="marquee-label">Map</div></div>
+        <div class="marquee-card">🎮<div class="marquee-label">Controls</div></div>
+      </div>
+    </div>
+
+    <!-- CTA BANNER -->
+    <div class="cta-banner">
+      <h2>Ready to Take Flight?</h2>
+      <p>Join thousands of players already soaring through the Wingbound universe.</p>
+      <a class="btn btn-white" href="#">▶ Get It Free on Google Play</a>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>&copy; 2025 Wingbound. All rights reserved.</p>
+      <p style="margin-top:10px;">
+        <a href="#" onclick="showPrivacy(event)">Privacy Policy</a> &nbsp;·&nbsp;
+        <a href="mailto:support@wingbound.com">Contact Us</a>
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- PRIVACY POLICY PAGE -->
+  <div id="privacy">
+    <h1>Privacy Policy</h1>
+    <p><strong>Effective Date:</strong> January 1, 2025</p>
+
+    <h2>1. Introduction</h2>
+    <p>Welcome to Wingbound ("we," "our," or "us"). This Privacy Policy explains how we collect, use, and protect information when you use our mobile game application ("the App").</p>
+
+    <h2>2. Information We Collect</h2>
+    <ul>
+      <li><strong>Device Information:</strong> Device type, operating system version, and unique device identifiers to ensure compatibility.</li>
+      <li><strong>Gameplay Data:</strong> Scores, progress, achievements, and in-game activity to power leaderboards and cloud saves.</li>
+      <li><strong>Analytics Data:</strong> App usage patterns and crash reports to improve performance and fix issues.</li>
+    </ul>
+
+    <h2>3. How We Use Your Information</h2>
+    <ul>
+      <li>To provide and improve the game experience.</li>
+      <li>To operate leaderboards and competitive features.</li>
+      <li>To diagnose and fix technical issues.</li>
+      <li>To send optional game updates and notifications (if you opt in).</li>
+    </ul>
+
+    <h2>4. Data Sharing</h2>
+    <p>We do not sell your personal information. We may share anonymized, aggregated data with analytics partners. We do not share identifiable data with third parties except as required by law.</p>
+
+    <h2>5. Children's Privacy</h2>
+    <p>Wingbound is intended for general audiences. We do not knowingly collect personal information from children under 13. If you believe a child has provided us personal data, please contact us to have it removed.</p>
+
+    <h2>6. Data Retention</h2>
+    <p>We retain gameplay and analytics data for up to 12 months, after which it is deleted or anonymized.</p>
+
+    <h2>7. Your Rights</h2>
+    <p>You may request access to, correction of, or deletion of your data by contacting us at <a href="mailto:support@wingbound.com">support@wingbound.com</a>.</p>
+
+    <h2>8. Security</h2>
+    <p>We implement industry-standard security measures to protect your information from unauthorized access or disclosure.</p>
+
+    <h2>9. Changes to This Policy</h2>
+    <p>We may update this Privacy Policy periodically. We will notify users of significant changes through in-app notices or by updating the effective date above.</p>
+
+    <h2>10. Contact Us</h2>
+    <p>If you have questions about this Privacy Policy, contact us at: <a href="mailto:support@wingbound.com">support@wingbound.com</a></p>
+
+    <br/>
+    <a class="btn btn-secondary" href="#" onclick="hidePrivacy(event)" style="display:inline-flex; margin-top:16px;">← Back to Home</a>
+  </div>
+
+  <script>
+    function showPrivacy(e) {
+      e.preventDefault();
+      document.getElementById('main-content').style.display = 'none';
+      document.getElementById('privacy').classList.add('active');
+      window.scrollTo(0,0);
+    }
+    function hidePrivacy(e) {
+      e.preventDefault();
+      document.getElementById('main-content').style.display = 'block';
+      document.getElementById('privacy').classList.remove('active');
+      window.scrollTo(0,0);
+    }
+  </script>
+
+</body>
+</html>
