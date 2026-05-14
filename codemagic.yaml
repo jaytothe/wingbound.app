@@ -27,6 +27,9 @@ workflows:
             -scheme App \
             -configuration Release \
             -archivePath $CM_BUILD_DIR/build/App.xcarchive \
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER="Wingbound App Store" \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
             archive
       - name: Export IPA
         script: |
@@ -36,11 +39,16 @@ workflows:
           <plist version="1.0">
           <dict>
             <key>method</key>
-            <string>app-store</string>
+            <string>app-store-connect</string>
             <key>teamID</key>
             <string>UV499A93G5</string>
-            <key>uploadBitcode</key>
-            <false/>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.jaytothe.wingbound</key>
+              <string>Wingbound App Store</string>
+            </dict>
             <key>uploadSymbols</key>
             <true/>
           </dict>
