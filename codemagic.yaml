@@ -23,19 +23,13 @@ workflows:
       - name: Build and export IPA
         script: |
           xcode-project use-profiles
-          cd ios/App
-          xcodebuild -workspace App.xcworkspace \
-            -scheme App \
-            -configuration Release \
-            -archivePath $CM_BUILD_DIR/App.xcarchive \
-            -allowProvisioningUpdates \
-            archive
-          xcodebuild -exportArchive \
-            -archivePath $CM_BUILD_DIR/App.xcarchive \
-            -exportOptionsPlist $CM_BUILD_DIR/App.xcarchive/Info.plist \
-            -exportPath $CM_BUILD_DIR/output
+          xcode-project build-ipa \
+            --workspace ios/App/App.xcworkspace \
+            --scheme App \
+            --config Release
     artifacts:
-      - $CM_BUILD_DIR/output/*.ipa
+      - $HOME/Library/Developer/Xcode/Archives/**/*.ipa
+      - /tmp/xcodebuild_logs/*.log
     publishing:
       app_store_connect:
         auth: integration
