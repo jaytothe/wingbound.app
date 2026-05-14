@@ -1,0 +1,38 @@
+workflows:
+  ios-workflow:
+    name: Wingbound iOS
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.jaytothe.wingbound
+      vars:
+        APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
+        APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
+      node: latest
+    scripts:
+      - name: Install dependencies
+        script: npm install
+      - name: Capacitor sync
+        script: npx cap sync ios
+      - name: Build iOS
+        script: |
+          xcode-project use-profiles
+          xcodebuild -workspace ios/App/App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -archivePath build/App.xcarchive \
+            archive
+      - name: Export IPA
+        script: |
+          xcode-project build-ipa \
+            --workspace ios/App/App.xcworkspace \
+            --archive-path build/App.xcarchive
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
