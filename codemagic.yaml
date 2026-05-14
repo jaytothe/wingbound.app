@@ -26,13 +26,13 @@ workflows:
           xcodebuild -workspace ios/App/App.xcworkspace \
             -scheme App \
             -configuration Release \
-            -archivePath build/App.xcarchive \
+            -archivePath $CM_BUILD_DIR/build/App.xcarchive \
             archive
       - name: Export IPA
         script: |
           xcode-project build-ipa \
             --workspace ios/App/App.xcworkspace \
-            --archive-path build/App.xcarchive
+            --archive-path $CM_BUILD_DIR/build/App.xcarchive
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
