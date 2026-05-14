@@ -20,46 +20,22 @@ workflows:
           cd ios/App
           pod init
           pod install
-      - name: Build iOS
+      - name: Build and export IPA
         script: |
           xcode-project use-profiles
-          xcodebuild -workspace ios/App/App.xcworkspace \
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace \
             -scheme App \
             -configuration Release \
-            -archivePath $CM_BUILD_DIR/build/App.xcarchive \
-            CODE_SIGN_STYLE=Manual \
-            PROVISIONING_PROFILE_SPECIFIER="Wingbound App Store" \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
+            -archivePath $CM_BUILD_DIR/App.xcarchive \
+            -allowProvisioningUpdates \
             archive
-      - name: Export IPA
-        script: |
-          cat > $CM_BUILD_DIR/build/export_options.plist << EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>app-store-connect</string>
-            <key>teamID</key>
-            <string>UV499A93G5</string>
-            <key>signingStyle</key>
-            <string>manual</string>
-            <key>provisioningProfiles</key>
-            <dict>
-              <key>com.jaytothe.wingbound</key>
-              <string>Wingbound App Store</string>
-            </dict>
-            <key>uploadSymbols</key>
-            <true/>
-          </dict>
-          </plist>
-          EOF
           xcodebuild -exportArchive \
-            -archivePath $CM_BUILD_DIR/build/App.xcarchive \
-            -exportOptionsPlist $CM_BUILD_DIR/build/export_options.plist \
-            -exportPath $CM_BUILD_DIR/build/ios/ipa
+            -archivePath $CM_BUILD_DIR/App.xcarchive \
+            -exportOptionsPlist $CM_BUILD_DIR/App.xcarchive/Info.plist \
+            -exportPath $CM_BUILD_DIR/output
     artifacts:
-      - build/ios/ipa/*.ipa
+      - $CM_BUILD_DIR/output/*.ipa
     publishing:
       app_store_connect:
         auth: integration
