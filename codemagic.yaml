@@ -28,8 +28,7 @@ workflows:
             --scheme App \
             --config Release
     artifacts:
-      - $HOME/Library/Developer/Xcode/Archives/**/*.ipa
-      - /tmp/xcodebuild_logs/*.log
+      - "**/*.ipa"
     publishing:
       app_store_connect:
         auth: integration
