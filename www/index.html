@@ -51,7 +51,8 @@ const GRAVITY = 0.38, JUMP = -7;
 
 // State
 let state = 'birdSelect';
-let score = 0, topScores = [0, 0, 0];
+let score = 0;
+let topScores = JSON.parse(localStorage.getItem('wingbound_scores') || '[0,0,0]');
 let pipes = [], pipeTimer = 0;
 let groundScroll = 0, cloudScroll = 0;
 let selectedBird = 0;
@@ -81,6 +82,7 @@ const clouds = [{x:60,y:65,w:80},{x:220,y:90,w:60},{x:340,y:50,w:90},{x:130,y:13
 // Scores
 function addScore(s) {
   topScores.push(s); topScores.sort((a,b)=>b-a); topScores=topScores.slice(0,3);
+  localStorage.setItem('wingbound_scores', JSON.stringify(topScores));
 }
 
 // ---- Utilities ----
