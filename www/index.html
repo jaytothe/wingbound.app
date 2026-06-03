@@ -57,6 +57,69 @@ let pipes = [], pipeTimer = 0;
 let groundScroll = 0, cloudScroll = 0;
 let selectedBird = 0;
 
+// Power-ups
+const POWERUP_TYPES = ['shield','slowmo','boost'];
+let powerups = [];
+let activePowerup = null;
+let shieldHits = 0;
+let powerupSpawnTimer = 0;
+const POWERUP_DURATION = 300;
+
+function spawnPowerup() {
+  const type = POWERUP_TYPES[Math.floor(Math.random()*POWERUP_TYPES.length)];
+  const y = 80 + Math.random() * (GROUND_Y - 160);
+  powerups.push({ x: W + 20, y, type, pulse: 0 });
+}
+
+function activatePowerup(type) {
+  activePowerup = { type, timer: POWERUP_DURATION };
+  shieldHits = type === 'shield' ? 1 : 0;
+}
+
+function powerupColor(type) {
+  if (type === 'shield') return { main:'#00ddff', dark:'#0088aa', glow:'rgba(0,200,255,0.4)' };
+  if (type === 'slowmo') return { main:'#aa44ff', dark:'#6600cc', glow:'rgba(160,60,255,0.4)' };
+  if (type === 'boost')  return { main:'#ffaa00', dark:'#cc6600', glow:'rgba(255,160,0,0.4)' };
+}
+
+function drawPowerupItem(p) {
+  const col = powerupColor(p.type);
+  p.pulse = (p.pulse || 0) + 0.08;
+  const sz = 12 + Math.sin(p.pulse) * 2;
+  ctx.fillStyle = col.glow;
+  ctx.beginPath(); ctx.arc(p.x, p.y, sz + 6, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = col.dark;
+  ctx.beginPath(); ctx.arc(p.x, p.y, sz + 2, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = col.main;
+  ctx.beginPath(); ctx.arc(p.x, p.y, sz, 0, Math.PI*2); ctx.fill();
+  ctx.font = '14px serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(type === 'shield' ? '\u{1F6E1}' : type === 'slowmo' ? '\u{1F40C}' : '\u26A1', p.x, p.y + 1);
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+}
+
+function drawActivePowerupHUD() {
+  if (!activePowerup) return;
+  const col = powerupColor(activePowerup.type);
+  const frac = activePowerup.timer / POWERUP_DURATION;
+  const barW = 80, barH = 8;
+  const bx = W/2 - barW/2, by = 52;
+  const labels = { shield:'SHIELD', slowmo:'SLOW MO', boost:'BOOST' };
+  pxText(labels[activePowerup.type], W/2 - 28, by - 2, 6, col.main, '#000');
+  ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(bx, by + 4, barW, barH);
+  ctx.fillStyle = col.main; ctx.fillRect(bx, by + 4, barW * frac, barH);
+  ctx.fillStyle = col.dark;
+  ctx.fillRect(bx, by+4, barW, 2); ctx.fillRect(bx, by+4+barH-2, barW, 2);
+  ctx.fillRect(bx, by+4, 2, barH); ctx.fillRect(bx+barW-2, by+4, 2, barH);
+  if (activePowerup.type === 'shield') {
+    ctx.fillStyle = 'rgba(0,200,255,0.25)';
+    ctx.beginPath(); ctx.arc(bird.x, bird.y, bird.r + 8, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = '#00ddff'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(bird.x, bird.y, bird.r + 8, 0, Math.PI*2); ctx.stroke();
+    ctx.lineWidth = 1;
+  }
+}
+
 // Bird defs
 const BIRDS = [
   { name:'BLUE',    nameCol:'#3a6db5', body:'#3a6db5', belly:'#f8d0a0', cap:'#1a3a6a',  capD:'#0a2050', w1:'#c8a020', w2:'#e8c040', beak:'#f8a000' },
@@ -383,6 +446,15 @@ function drawBirdSelect() {
   const tag=IS_NIGHT?'NIGHT MODE':'DAY MODE';
   pxText(tag,W/2-56,404,8,IS_NIGHT?'#aaccff':'#ffee88','#000000');
 
+  // Power-up legend
+  pxText('POWER-UPS',W/2-52,432,7,'#ffdd00','#000000');
+  const puItems = [
+    { col:'#00ddff', label:'\u26A1BOOST  \u{1F6E1}SHIELD  \u{1F40C}SLOW MO' }
+  ];
+  pxText('\u26A1BOOST', 36, 450, 6, '#ffaa00', '#000000');
+  pxText('\u{1F6E1}SHIELD', 136, 450, 6, '#00ddff', '#000000');
+  pxText('\u{1F40C}SLOWMO', 236, 450, 6, '#aa44ff', '#000000');
+
   // Day/night toggle button
   const btnLabel = IS_NIGHT ? '> DAY MODE' : '> NIGHT MODE';
   const btnBg    = IS_NIGHT ? '#c8a000' : '#142488';
@@ -419,19 +491,55 @@ function drawDeadScreen() {
 // ---- Game logic ----
 function update() {
   if(state!=='playing') return;
-  bird.vy+=GRAVITY; bird.y+=bird.vy;
+
+  // Active power-up tick
+  if (activePowerup) {
+    activePowerup.timer--;
+    if (activePowerup.timer <= 0) activePowerup = null;
+  }
+
+  const currentSpeed = (activePowerup && activePowerup.type === 'slowmo') ? PIPE_SPEED * 0.4 : PIPE_SPEED;
+  const currentGravity = (activePowerup && activePowerup.type === 'slowmo') ? GRAVITY * 0.4 : GRAVITY;
+  const currentJump = (activePowerup && activePowerup.type === 'boost') ? JUMP * 1.5 : JUMP;
+
+  bird.vy += currentGravity; bird.y += bird.vy;
+
   pipeTimer++;
   if(pipeTimer>=90){spawnPipe();pipeTimer=0;}
+
+  // Power-up spawning (every ~8 pipes)
+  powerupSpawnTimer++;
+  if(powerupSpawnTimer >= 720){spawnPowerup();powerupSpawnTimer=0;}
+
   pipes.forEach(p=>{
-    p.x-=PIPE_SPEED;
+    p.x -= currentSpeed;
     if(!p.passed&&p.x+PIPE_W<bird.x){p.passed=true;score++;}
   });
   pipes=pipes.filter(p=>p.x+PIPE_W>-20);
+
+  // Move and collect power-ups
+  powerups.forEach(p => { p.x -= currentSpeed; });
+  powerups = powerups.filter(p => {
+    const dx = bird.x - p.x, dy = bird.y - p.y;
+    if (Math.sqrt(dx*dx+dy*dy) < bird.r + 14) {
+      activatePowerup(p.type);
+      return false;
+    }
+    return p.x > -30;
+  });
+
   if(bird.y+bird.r>=GROUND_Y||bird.y-bird.r<=0){die();return;}
   for(const p of pipes){
     const cX=p.x-6,cW=PIPE_W+12;
     if(bird.x+bird.r>cX&&bird.x-bird.r<cX+cW){
-      if(bird.y-bird.r<p.gapY||bird.y+bird.r>p.gapY+PIPE_GAP){die();return;}
+      if(bird.y-bird.r<p.gapY||bird.y+bird.r>p.gapY+PIPE_GAP){
+        if(activePowerup && activePowerup.type==='shield' && shieldHits>0){
+          shieldHits--;
+          activePowerup = null;
+          return;
+        }
+        die();return;
+      }
     }
   }
 }
@@ -444,17 +552,24 @@ function die() {
 function startGame() {
   state='playing'; resetBird();
   pipes=[]; pipeTimer=0; score=0; bird.vy=JUMP;
+  powerups=[]; activePowerup=null; powerupSpawnTimer=0;
 }
 
 function goToBirdSelect() {
   state='birdSelect'; pipes=[]; pipeTimer=0; score=0; resetBird();
+  powerups=[]; activePowerup=null; powerupSpawnTimer=0;
 }
 
 function tap() {
   if(state==='birdSelect'){startGame();}
-  else if(state==='playing'){bird.vy=JUMP;}
+  else if(state==='playing'){
+    const currentJump = (activePowerup && activePowerup.type === 'boost') ? JUMP * 1.5 : JUMP;
+    bird.vy = currentJump;
+  }
   else if(state==='dead'){
-    state='playing'; resetBird(); pipes=[]; pipeTimer=0; score=0; bird.vy=JUMP;
+    state='playing'; resetBird(); pipes=[]; pipeTimer=0; score=0;
+    powerups=[]; activePowerup=null; powerupSpawnTimer=0;
+    bird.vy=JUMP;
   }
 }
 
@@ -516,7 +631,10 @@ function loop(timestamp) {
   } else {
     drawSky(); drawClouds();
     pipes.forEach(drawPipe);
-    drawGround(); drawBird(); drawHUD();
+    powerups.forEach(drawPowerupItem);
+    drawGround(); drawBird();
+    drawActivePowerupHUD();
+    drawHUD();
     if(state==='dead') drawDeadScreen();
   }
 }
