@@ -83,6 +83,7 @@ function powerupColor(type) {
 }
 
 function drawPowerupItem(p) {
+  ctx.save();
   const col = powerupColor(p.type);
   p.pulse = (p.pulse || 0) + 0.08;
   const sz = 12 + Math.sin(p.pulse) * 2;
@@ -92,14 +93,16 @@ function drawPowerupItem(p) {
   ctx.beginPath(); ctx.arc(p.x, p.y, sz + 2, 0, Math.PI*2); ctx.fill();
   ctx.fillStyle = col.main;
   ctx.beginPath(); ctx.arc(p.x, p.y, sz, 0, Math.PI*2); ctx.fill();
+  const icon = p.type === 'shield' ? '\u{1F6E1}' : p.type === 'slowmo' ? '\u{1F40C}' : '\u26A1';
   ctx.font = '14px serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(type === 'shield' ? '\u{1F6E1}' : type === 'slowmo' ? '\u{1F40C}' : '\u26A1', p.x, p.y + 1);
-  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText(icon, p.x, p.y + 1);
+  ctx.restore();
 }
 
 function drawActivePowerupHUD() {
   if (!activePowerup) return;
+  ctx.save();
   const col = powerupColor(activePowerup.type);
   const frac = activePowerup.timer / POWERUP_DURATION;
   const barW = 80, barH = 8;
@@ -116,8 +119,8 @@ function drawActivePowerupHUD() {
     ctx.beginPath(); ctx.arc(bird.x, bird.y, bird.r + 8, 0, Math.PI*2); ctx.fill();
     ctx.strokeStyle = '#00ddff'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(bird.x, bird.y, bird.r + 8, 0, Math.PI*2); ctx.stroke();
-    ctx.lineWidth = 1;
   }
+  ctx.restore();
 }
 
 // Bird defs
