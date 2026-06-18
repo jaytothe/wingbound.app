@@ -20,6 +20,12 @@ workflows:
           cd ios/App
           pod init
           pod install
+      - name: Bump build number
+        script: |
+          LATEST=$(app-store-connect get-latest-build-number "com.jaytothe.wingbound")
+          NEXT=$((LATEST + 1))
+          echo "Setting build number to $NEXT"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $NEXT" ios/App/App/Info.plist
       - name: Build and export IPA
         script: |
           xcode-project use-profiles
